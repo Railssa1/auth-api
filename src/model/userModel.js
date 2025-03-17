@@ -5,22 +5,23 @@ const prisma = new PrismaClient();
 
 const UserModel = {
     // Cria um usuário estudante
-    async createEstudante(email, password) {
+    async createEstudante(email, password, name) {
         const hashedPassword = await bcrypt.hash(password, 10);
         return await prisma.user_Estudante.create({   
-            data: { email, password: hashedPassword }
+            data: { email, password: hashedPassword, name }
         });
     },
 
     // Cria um usuário mentor
-    async createMentor(email, password, skills, seniority) {
+    async createMentor(email, password, skills, seniority, name) {
         const hashedPassword = await bcrypt.hash(password, 10);
         return await prisma.user_Mentor.create({   
             data: {
                 email,
                 password: hashedPassword,
                 skills: skills, 
-                seniority
+                seniority,
+                name
             }
         });
     },
