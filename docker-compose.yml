@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  auth_db:
+    image: mysql:8
+    container_name: code-begginer-hub-bd
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: auth_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - backend_network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p123456"]
+      interval: 5s
+      timeout: 2s
+      retries: 20
+
+  backend_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: code-begginer-hub-backend
+    restart: always
+    environment:
+      DB_HOST: auth_db
+      DB_USER: root
+      DB_PASSWORD: 123456
+      DB_NAME: auth_db
+      DATABASE_URL: mysql://root:123456@auth_db:3306/auth_db  
+    ports:
+      - "3000:3000"
+    depends_on:
+      - auth_db
+    networks:
+      - backend_network
+    entrypoint: /bin/sh -c "until bash -c 'echo > /dev/tcp/auth_db/3306'; do echo waiting for mysql; sleep 2; done; npm start"
+
+networks:
+  backend_network:
+
+volumes:
+  mysql_data:
