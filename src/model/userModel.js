@@ -79,6 +79,79 @@ const UserModel = {
         }
     
         throw new Error("Usuário não encontrado");
+    },
+
+    // Atualiza os dados do usuário
+    async updateUser(email, data) {
+        const userType = await prisma.user_Estudante.findUnique({
+            where: { email }
+        }) ? 'estudante' : 'mentor';
+    
+        try {
+            if (userType === 'estudante') {
+                return await prisma.user_Estudante.update({
+                    where: { email },
+                    data,
+                });
+            } else {
+                return await prisma.user_Mentor.update({
+                    where: { email },
+                    data,
+                });
+            }
+        } catch (error) {
+            throw new Error("Erro ao atualizar o usuário: " + error.message);
+        }
+    },
+
+    // Deleta um usuário 
+    async deleteUser(email) {
+        const estudante = await prisma.user_Estudante.findUnique({
+            where: { email }
+        });
+    
+        if (estudante) {
+            return await prisma.user_Estudante.delete({
+                where: { email },
+            });
+        }
+    
+        const mentor = await prisma.user_Mentor.findUnique({
+            where: { email }
+        });
+    
+        if (mentor) {
+            return await prisma.user_Mentor.delete({
+                where: { email },
+            });
+        }
+    
+        throw new Error("Usuário não encontrado");
+    },
+
+    // Lista todos os dados de um usuário
+    async listUser(email) {
+        const estudante = await prisma.user_Estudante.findUnique({
+            where: { email }
+        });
+    
+        if (estudante) {
+            return await prisma.user_Estudante.findUnique({
+                where: { email },
+            });
+        }
+    
+        const mentor = await prisma.user_Mentor.findUnique({
+            where: { email }
+        });
+    
+        if (mentor) {
+            return await prisma.user_Mentor.findUnique({
+                where: { email },
+            });
+        }
+    
+        throw new Error("Usuário não encontrado");
     }
 };
 

@@ -46,7 +46,7 @@ const UserController = {
 
         // Gera o JWT
         const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
-        res.json({ message: "Login feito com sucesso", token });
+        res.json({ message: "Login feito com sucesso", token, email });
     },
 
     async forgotPassword(req, res) {
@@ -106,7 +106,64 @@ const UserController = {
             console.error(error);
             res.status(500).json({ error: 'Erro ao redefinir a senha' });
         }
-    }
+    },
+
+    async updateUser(req, res) {
+        const { email, name, skills, seniority } = req.body;
+    
+        try {
+            const user = await UserModel.findEstudanteByEmail(email) || await UserModel.findMentorByEmail(email);
+    
+            if (!user) {
+                return res.status(400).json({ error: "Usuário não encontrado" });
+            }
+    
+            const updateData = {};
+            if (name) updateData.name = name;
+            if (skills && user.skills !== undefined) updateData.skills = skills; 
+            if (seniority && user.seniority !== undefined) updateData.seniority = seniority; 
+    
+            const updatedUser = await UserModel.updateUser(email, updateData);
+    
+            res.json({ message: 'Usuário atualizado com sucesso', user: updatedUser });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Erro ao atualizar o usuário' });
+        }
+    },
+
+    async deleteUser(req, res) {
+        const { email } = req.body;
+    
+        try {
+            const user = await UserModel.findEstudanteByEmail(email) || await UserModel.findMentorByEmail(email);
+    
+            if (!user) {
+                return res.status(404).json({ error: "Usuário não encontrado" });
+            }
+    
+            await UserModel.deleteUser(email);
+            res.json({ message: "Usuário deletado com sucesso" });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: "Erro ao deletar o usuário" });
+        }
+    },
+
+    async getUser(req, res) {
+        const { email } = req.query;
+        if (!email) {
+            return res.status(400).json({ error: "Email não fornecido" });
+        }
+
+        const user = await UserModel.findEstudanteByEmail(email) || await UserModel.findMentorByEmail(email);
+
+        if (!user) {
+            return res.status(400).json({ error: "Usuário não encontrado" });
+        }
+
+        res.json(user);
+    },
 }
 
 module.exports = UserController
