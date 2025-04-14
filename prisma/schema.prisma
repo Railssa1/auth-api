@@ -22,3 +22,10 @@ model User_Mentor {
   seniority   String
   name        String
 }
+
+model Topic {
+  id          Int    @id @default(autoincrement())
+  title       String
+  languages   Json
+  description String
+}

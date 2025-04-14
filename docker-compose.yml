@@ -35,10 +35,11 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - auth_db
+      auth_db:
+        condition: service_healthy
     networks:
       - backend_network
-    entrypoint: /bin/sh -c "until bash -c 'echo > /dev/tcp/auth_db/3306'; do echo waiting for mysql; sleep 2; done; npm start"
+    entrypoint: ["/bin/sh", "-c", "npx prisma migrate deploy && npm start"]
 
 networks:
   backend_network:
