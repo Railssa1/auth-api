@@ -1,14 +1,22 @@
+// topicModel.js
 const { PrismaClient } = require('@prisma/client');
-
 const prisma = new PrismaClient();
 
-const UserModel = {
-    // Cria um tópico
-    async createTopic(title, languages, description) {
-        return await prisma.Topic.create({   
-            data: { title, languages, description }
+const TopicModel = {
+    async createTopic(title, languages, description, author) {
+        return await prisma.topic.create({
+          data: { title, languages, description, author }
         });
-    },
+      },      
+
+
+      async getAllTopics() {
+        return await prisma.topic.findMany({
+            orderBy: {
+                id: 'desc', 
+            },
+        });
+    }
 };
 
-module.exports = UserModel;
+module.exports = TopicModel;

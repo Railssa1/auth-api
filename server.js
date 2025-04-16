@@ -3,7 +3,7 @@ const express = require("express");
 const cors = require("cors"); // <-- Importando CORS
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 const userRoutes = require("./src/routes/userRoutes");
 const topicRoutes = require("./src/routes/topicRoutes");
 

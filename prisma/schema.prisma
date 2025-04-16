@@ -28,4 +28,5 @@ model Topic {
   title       String
   languages   Json
   description String
+  author      String 
 }
