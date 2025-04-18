@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 const TopicModel = {
     async createTopic(title, languages, description, author) {
         return await prisma.topic.create({
-          data: { title, languages, description, author }
+          data: { title, languages, description, author, completed: false }
         });
       },      
 

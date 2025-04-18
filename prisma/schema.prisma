@@ -29,4 +29,5 @@ model Topic {
   languages   Json
   description String
   author      String 
+  completed   Boolean @default(false)
 }
