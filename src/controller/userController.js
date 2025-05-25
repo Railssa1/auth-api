@@ -161,7 +161,6 @@ const UserController = {
         if (!user) {
             return res.status(400).json({ error: "Usuário não encontrado" });
         }
-
         res.json(user);
     },
 }

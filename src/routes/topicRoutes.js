@@ -5,5 +5,7 @@ const router = express.Router();
 
 router.post("/create-topic", TopicController.createTopic);
 router.get("/", TopicController.getTopics);
+router.patch('/vincular-mentor/:topicId', TopicController.updateMentorId);
+
 
 module.exports = router;

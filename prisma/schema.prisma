@@ -8,26 +8,54 @@ datasource db {
 }
 
 model User_Estudante {
-  id          Int @id @default(autoincrement())
-  email       String @unique
-  password    String
-  name        String
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+  name     String
+
+  topics Topic[] @relation("EstudanteTopicos") // relação inversa com Topic
 }
 
 model User_Mentor {
-  id          Int @id @default(autoincrement())
-  email       String @unique
-  password    String
-  skills      Json
-  seniority   String
-  name        String
+  id        Int    @id @default(autoincrement())
+  email     String @unique
+  password  String
+  skills    Json
+  seniority String
+  name      String
+
+  attendedTopics Topic[] @relation("MentorTopicos") 
 }
 
 model Topic {
-  id          Int    @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   title       String
   languages   Json
   description String
-  author      String 
+  author      String
   completed   Boolean @default(false)
+  inProgress  Boolean @default(false)
+
+  studentId Int?
+  mentorId  Int?
+
+  student User_Estudante? @relation("EstudanteTopicos", fields: [studentId], references: [id])
+  mentor  User_Mentor?    @relation("MentorTopicos", fields: [mentorId], references: [id])
+
+  messages Message[]
+
+  chatReadByMentor  Boolean @default(false)
+  chatReadByStudent Boolean @default(false)
+  chatConcluded     Boolean @default(false)
+}
+
+model Message {
+  id         Int      @id @default(autoincrement())
+  senderId   Int
+  senderType String // "mentor" ou "student"
+  message    String
+  createdAt  DateTime @default(now())
+
+  topicId Int
+  topic   Topic @relation(fields: [topicId], references: [id])
 }
