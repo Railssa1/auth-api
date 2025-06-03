@@ -26,11 +26,20 @@ const TopicModel = {
   },
 
   async setMentorForTopic(topicId, mentorId) {
+    const topic = await prisma.topic.findUnique({
+      where: { id: topicId },
+    });
+
+    if (!topic) {
+      throw new Error('Tópico não encontrado');
+    }
+
     return await prisma.topic.update({
       where: { id: topicId },
       data: { mentorId: mentorId }
     });
   },
+
 
   async markAsInProgress(topicId) {
     return await prisma.topic.update({
