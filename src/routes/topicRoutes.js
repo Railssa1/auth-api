@@ -7,5 +7,6 @@ router.post("/create-topic", TopicController.createTopic);
 router.get("/", TopicController.getTopics);
 router.patch('/vincular-mentor/:topicId', TopicController.updateMentorId);
 router.patch('/:topicId', TopicController.updateTopic);
+router.get('/:topicId', TopicController.getTopicById);
 
 module.exports = router;

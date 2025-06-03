@@ -46,7 +46,13 @@ const TopicModel = {
       where: { id: Number(topicId) },
       data: { inProgress: true }
     });
-  }
+  },
+
+  async getTopicById(topicId) {
+    return await prisma.topic.findUnique({
+      where: { id: Number(topicId) },
+    });
+  },
 
 };
 

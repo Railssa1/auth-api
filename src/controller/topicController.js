@@ -58,6 +58,24 @@ const TopicController = {
       res.status(500).json({ error: 'Erro ao atualizar tópico' });
     }
   },
+
+  async getTopicById(req, res) {
+    const { topicId } = req.params;
+
+    try {
+      const topic = await TopicModel.getTopicById(Number(topicId));
+
+      if (!topic) {
+        return res.status(404).json({ error: "Tópico não encontrado" });
+      }
+
+      res.status(200).json(topic);
+    } catch (error) {
+      console.error('Erro ao buscar tópico:', error);
+      res.status(500).json({ error: 'Erro ao buscar tópico' });
+    }
+  }
+
 };
 
 module.exports = TopicController;
