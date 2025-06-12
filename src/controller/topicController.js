@@ -74,7 +74,48 @@ const TopicController = {
       console.error('Erro ao buscar tópico:', error);
       res.status(500).json({ error: 'Erro ao buscar tópico' });
     }
-  }
+  },
+
+  async getCompletedTopicById(req, res) {
+    const { topicId } = req.params;
+
+    try {
+      const topic = await TopicModel.getTopicWithMessagesById(Number(topicId));
+
+      if (!topic || !topic.messages || topic.messages.length === 0) {
+        return res.status(404).json({ error: "Tópico não encontrado ou não concluído" });
+      }
+
+      res.status(200).json(topic);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Erro ao buscar tópico" });
+    }
+  },
+
+  async getAllCompletedTopics(req, res) {
+    try {
+      const topics = await TopicModel.getCompletedTopicsWithMessages();
+
+      const formatted = topics.map(topic => ({
+        topicId: topic.id,
+        title: topic.title,
+        author: topic.author,
+        messages: topic.messages.map(msg => ({
+          messageId: msg.id,
+          senderType: msg.senderType,
+          senderId: msg.senderId,
+          message: msg.message,
+        })),
+      }));
+
+      res.status(200).json(formatted);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Erro ao buscar tópicos concluídos" });
+    }
+  },
+
 
 };
 

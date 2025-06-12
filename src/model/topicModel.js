@@ -54,6 +54,85 @@ const TopicModel = {
     });
   },
 
+  async getTopicWithMessagesById(topicId) {
+    const topic = await prisma.topic.findUnique({
+      where: { id: Number(topicId) },
+      select: {
+        id: true,
+        title: true,
+        author: true,
+        completed: true,
+        messages: {
+          select: {
+            id: true,
+            senderType: true,
+            senderId: true,
+            message: true,
+            createdAt: true,
+          },
+          orderBy: { createdAt: 'asc' },
+        },
+      },
+    });
+
+    if (!topic) return null;
+
+    // Carregar nomes dos remetentes (student ou mentor) manualmente
+    const enrichedMessages = await Promise.all(topic.messages.map(async (msg) => {
+      let senderName = null;
+
+      if (msg.senderType === 'student') {
+        const user = await prisma.user_Estudante.findUnique({
+          where: { id: msg.senderId },
+          select: { name: true }
+        });
+        senderName = user?.name ?? null;
+      } else if (msg.senderType === 'mentor') {
+        const user = await prisma.user_Mentor.findUnique({
+          where: { id: msg.senderId },
+          select: { name: true }
+        });
+        senderName = user?.name ?? null;
+      }
+
+      return {
+        messageId: msg.id,
+        senderType: msg.senderType,
+        senderId: msg.senderId,
+        message: msg.message,
+        createdAt: msg.createdAt,
+        senderName
+      };
+    }));
+
+    return {
+      topicId: topic.id,
+      title: topic.title,
+      author: topic.author,
+      messages: enrichedMessages
+    };
+  },
+
+  async getCompletedTopicsWithMessages() {
+    return await prisma.topic.findMany({
+      where: { completed: true },
+      select: {
+        id: true,
+        title: true,
+        author: true,
+        messages: {
+          select: {
+            id: true,
+            senderType: true,
+            senderId: true,
+            message: true,
+          }
+        }
+      }
+    });
+  },
+
+
 };
 
 module.exports = TopicModel;
