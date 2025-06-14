@@ -35,6 +35,7 @@ model Topic {
   author      String
   completed   Boolean @default(false)
   inProgress  Boolean @default(false)
+  isPublish   Boolean @default(false)
 
   studentId Int?
   mentorId  Int?
